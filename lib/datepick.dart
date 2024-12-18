@@ -3,73 +3,74 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class datepick extends StatefulWidget {
-  const datepick({super.key});
+class DatePick extends StatefulWidget {
+  const DatePick({super.key});
 
   @override
-  State<datepick> createState() => _MyWidgetState();
+  State<DatePick> createState() => _DatePickState();
 }
 
-class _MyWidgetState extends State<datepick> {
-  var t;
+class _DatePickState extends State<DatePick> {
+  DateTime? selectedDate;
+  TimeOfDay? selectedTime;
 
-  TimeOfDay? selectedtime;
-
-  void picktime() async {
-    var t =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
-    setState(() {
-      selectedtime = t;
-    });
+  Future<void> pickDate() async {
+    DateTime? date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000, 12, 31),
+      lastDate: DateTime(3000, 1, 1),
+    );
+    if (date != null) {
+      setState(() {
+        selectedDate = date;
+      });
+    }
   }
 
-  var d;
-  DateTime? selecteddate;
-  void pickdate() async {
-    d = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2000, 12, 31),
-        lastDate: DateTime(3000, 1, 1));
-    setState(() {
-      selecteddate = d;
-    });
+  Future<void> pickTime() async {
+    TimeOfDay? time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (time != null) {
+      setState(() {
+        selectedTime = time;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Date and Time Picker'),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () async {
-                d = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2000, 12, 31),
-                    lastDate: DateTime(3000, 1, 1));
-                pickdate();
-                if (d != null) {
-                  print(d);
-                }
-              },
-              child: const Text('date'),
+              onPressed: pickDate,
+              child: const Text('Select Date'),
             ),
             Text(
-                selecteddate != null ? DateFormat('dd-MM-yyyy').format(d) : ''),
+              selectedDate != null
+                  ? DateFormat('dd-MM-yyyy').format(selectedDate!)
+                  : 'No Date Selected',
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 20),
             ElevatedButton(
-                onPressed: () async {
-                  t = await showTimePicker(
-                      context: context, initialTime: TimeOfDay.now());
-                  picktime();
-                  if (t != null) {
-                    print(t);
-                  }
-                },
-                child: const Text('Time')),
-            Text(selectedtime != null ? selectedtime!.format(context) : '')
+              onPressed: pickTime,
+              child: const Text('Select Time'),
+            ),
+            Text(
+              selectedTime != null
+                  ? selectedTime!.format(context)
+                  : 'No Time Selected',
+              style: const TextStyle(fontSize: 16),
+            ),
           ],
         ),
       ),
